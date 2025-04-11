@@ -1,0 +1,48 @@
+@Library("shared") _
+pipeline{
+    
+    agent { label "vinod" }
+    
+    stages{
+        stage("Hello"){
+            steps{
+                script{
+                    hello()
+                }
+            }
+        }
+        stage("code"){
+            steps{
+                script{
+                    git_clone("https://github.com/sunilrsonar/django-notes-app.git","main")
+                }
+            }
+        }
+        stage("Build"){
+            steps{
+                script{
+                    docker_build("notes-app","latest","sunilrsonar")
+                }
+            }
+            
+        }
+        stage("Image pushing"){
+            steps{
+                script{
+                    docker_push("notes-app","latest","sunilrsonar")
+                }
+            }
+        }
+        stage("test"){
+            steps{
+                echo "this is testing the code"
+            }
+        }
+        stage("deploy"){
+            steps{
+                echo "this is deploying the code"
+                sh "docker compose up -d"
+            }
+        }
+    }
+}
